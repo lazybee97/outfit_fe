@@ -14,7 +14,8 @@ export default function RatingResult() {
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const [ratingResponse, setRatingResponse] = useState<RatingsResponse | null>(null);
   const [outfitContext, setOutfitContext] = useState<OutfitContext | null>(null);
 
@@ -41,31 +42,37 @@ export default function RatingResult() {
       setImage(storedImage);
       setOutfitContext(parsedContext);
 
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_OUTFIT_BE_URL}/api/evaluate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            image_url: storedImage,
+            country: parsedContext.country,
+            occasion: parsedContext.occasion,
+            age: parsedContext.age,
+            additonalContext: parsedContext.specialNotes
+          }),
+          signal: AbortSignal.timeout(45000)
+        });
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_OUTFIT_BE_URL}/api/evaluate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          image_url: storedImage,
-          country: parsedContext.country,
-          occasion: parsedContext.occasion,
-          age: parsedContext.age,
-          additonalContext: parsedContext.specialNotes
-        })
-      });
+        if (!response || response.status !== 200) {
+          setIsLoading(false);
+          setIsError(true);
+          throw new Error('Failed to get ratings');
+        }
 
-      if (!response.ok) {
+        const data = await response.json();
+        setRatingResponse(data);
+        localStorage.setItem('outfitRatings', JSON.stringify(data));
+        setIsLoading(false);
+      } catch (error) {
         setIsLoading(false);
         setIsError(true);
-        throw new Error('Failed to get ratings');
+        console.error('Error fetching ratings:', error);
       }
-
-      const data = await response.json();
-      setRatingResponse(data);
-      localStorage.setItem('outfitRatings', JSON.stringify(data));
-      setIsLoading(false);
     };
 
     fetchRatings();
@@ -79,26 +86,36 @@ export default function RatingResult() {
           {image && (
             <div className="space-y-8">
               <div className="relative w-full max-w-md mx-auto rounded-xl overflow-hidden" style={{ zIndex: 10 }}>
+                {!imageLoaded && (
+                  <div className="flex items-center justify-center h-64 bg-gray-800/50 rounded-xl">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+                  </div>
+                )}
                 <img
                   src={image}
                   alt="Uploaded outfit"
-                  className="object-cover w-full h-auto object-contain"
+                  className={`object-cover w-full h-auto object-contain ${!imageLoaded ? 'hidden' : 'block'}`}
+                  onLoad={() => setImageLoaded(true)}
                 />
               </div>
-              
-              {isLoading ? (
-                <div className="space-y-4">
-                  <LoadingBar />
-                  <LoadingBar delay={0.2} />
-                  <LoadingBar delay={0.4} />
-                </div>
-              ) : isError ? (
-                <div className="space-y-4">
-                  <p className="text-red-500">Error loading ratings. Please try again.</p>
-                </div>
-              ) : ratingResponse && outfitContext ? (
-                <RatingDisplay ratingResponse={ratingResponse} outfitContext={outfitContext} />
-              ) : null}
+
+              {imageLoaded && (
+                <>
+                  {isLoading ? (
+                    <div className="space-y-4">
+                      <LoadingBar />
+                      <LoadingBar delay={0.2} />
+                      <LoadingBar delay={0.4} />
+                    </div>
+                  ) : isError ? (
+                    <div className="space-y-4">
+                      <p className="text-red-500">Error loading ratings. Please try again.</p>
+                    </div>
+                  ) : ratingResponse && outfitContext ? (
+                    <RatingDisplay ratingResponse={ratingResponse} outfitContext={outfitContext} />
+                  ) : null}
+                </>
+              )}
 
               <motion.button
                 onClick={() => router.push('/')}
