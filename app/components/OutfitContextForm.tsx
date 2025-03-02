@@ -80,23 +80,14 @@ export default function OutfitContextForm({ context, onChange }: OutfitContextFo
         custom={2}
       >
         <label className="block text-white mb-2 text-sm">Country</label>
-        <select
+        <input
+          type="text"
           name="country"
           value={context.country}
           onChange={onChange}
+          placeholder="Enter Country"
           className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-white/30"
-        >
-          <option value="" className="bg-gray-800">Select Country</option>
-          <option value="us" className="bg-gray-800">United States</option>
-          <option value="uk" className="bg-gray-800">United Kingdom</option>
-          <option value="ca" className="bg-gray-800">Canada</option>
-          <option value="au" className="bg-gray-800">Australia</option>
-          <option value="fr" className="bg-gray-800">France</option>
-          <option value="jp" className="bg-gray-800">Japan</option>
-          <option value="kr" className="bg-gray-800">South Korea</option>
-          <option value="in" className="bg-gray-800">India</option>
-          <option value="other" className="bg-gray-800">Other</option>
-        </select>
+        />
       </motion.div>
 
       <motion.div 
