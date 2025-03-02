@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { bubblegum, tomorrow } from './fonts/fonts';
-import OutfitContextForm, { OutfitContext } from './components/outfitContextForm';
+import OutfitContextForm, { OutfitContext } from './components/OutfitContextForm';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import FashionItems from './components/fashionItems';

@@ -3,13 +3,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { tomorrow } from '../fonts/fonts';
-import RatingDisplay from './ratingDisplay';
 import { useRouter } from 'next/navigation';
-import type { OutfitContext } from '../components/outfitContextForm';
+import type { OutfitContext } from '../components/OutfitContextForm';
 import type { RatingsResponse } from '../types/ratingResponse';
 import FashionItems from '../components/fashionItems';
-
-
+import RatingDisplay from './RatingDisplay';
 
 export default function RatingResult() {
   const router = useRouter();

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import React from 'react';
-import { OutfitContext } from '../components/outfitContextForm';
+import { OutfitContext } from '../components/OutfitContextForm';
 import { tomorrow } from '../fonts/fonts';
 import type { RatingsResponse } from '../types/ratingResponse';
 
