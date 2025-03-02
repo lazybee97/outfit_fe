@@ -68,6 +68,8 @@ export default function OutfitContextForm({ context, onChange }: OutfitContextFo
           <option value="party" className="bg-gray-800">Party</option>
           <option value="date" className="bg-gray-800">Date</option>
           <option value="wedding" className="bg-gray-800">Wedding</option>
+          <option value="sports" className="bg-gray-800">Sports</option>
+          <option value="travel" className="bg-gray-800">Travel</option>
           <option value="other" className="bg-gray-800">Other</option>
         </select>
       </motion.div>

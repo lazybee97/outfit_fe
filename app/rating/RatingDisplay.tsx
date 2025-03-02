@@ -43,7 +43,7 @@ export default function RatingDisplay({ ratingResponse, outfitContext }: { ratin
   return (
     <div className={`space-y-6 ${tomorrow.className}`}>
 
-      <motion.div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
+      <motion.div className="rounded-xl p-6 border border-white/10">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-white font-medium text-lg">Overall Rating</h3>
           <span className="text-white font-bold bg-white/10 px-3 py-1 rounded-full">
@@ -54,7 +54,7 @@ export default function RatingDisplay({ ratingResponse, outfitContext }: { ratin
       </motion.div>
 
       <motion.div
-        className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10"
+        className="rounded-xl p-6 border border-white/10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -90,7 +90,7 @@ export default function RatingDisplay({ ratingResponse, outfitContext }: { ratin
       {ratingResponse.ratings.map((rating, index) => (
         <motion.div
           key={rating.criteria}
-          className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 hover:border-white/30 transition-colors"
+          className="rounded-xl p-6 border border-white/10 hover:border-white/30 transition-colors"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}

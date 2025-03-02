@@ -178,7 +178,7 @@ export default function RatingPage() {
             {image && (
               <motion.button
                 onClick={handleGetRating}
-                className="w-full action-button text-white font-bold py-3 px-6 rounded-lg"
+                className={`w-full action-button text-white font-bold py-3 px-6 rounded-lg ${tomorrow.className}`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
