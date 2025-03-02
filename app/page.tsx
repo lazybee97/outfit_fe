@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { bubblegum, tomorrow } from './fonts/fonts';
-import OutfitContextForm, { OutfitContext } from './components/OutfitContextForm';
+import OutfitContextForm, { OutfitContext } from './components/outfitContextForm';
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import FashionItems from './components/fashionItems';
 
 export default function RatingPage() {
   const router = useRouter();
@@ -17,6 +18,8 @@ export default function RatingPage() {
     country: '',
     specialNotes: ''
   });
+  
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     localStorage.removeItem('outfitImage');
@@ -34,11 +37,15 @@ export default function RatingPage() {
 
   const handleGetRating = () => {
     if (image) {
+      setIsLoading(true);
       // Store data in localStorage for the next page
-      console.log(outfitContext);
       localStorage.setItem('outfitImage', image);
       localStorage.setItem('outfitContext', JSON.stringify(outfitContext));
-      router.push('/rating');
+      
+      // Add a small delay for animation effect
+      setTimeout(() => {
+        router.push('/rating');
+      }, 500);
     }
   };
 
@@ -50,10 +57,11 @@ export default function RatingPage() {
     },
     multiple: false,
     onDrop: async (acceptedFiles) => {
+      setIsLoading(true);
       const file = acceptedFiles[0];
       
       // 1. Get presigned URL from your backend
-      const { presignedUrl, objectUrl } = await fetch(`${process.env.OUTFIT_BE_URL}/api/get-upload-url`, {
+      const { presignedUrl, objectUrl } = await fetch(`${process.env.NEXT_PUBLIC_OUTFIT_BE_URL}/api/get-upload-url`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -68,59 +76,98 @@ export default function RatingPage() {
         body: file
       });
 
-      console.log(objectUrl);
-
       // 3. Save the final URL
       setImage(objectUrl);
       localStorage.setItem('outfitImage', objectUrl);
+      setIsLoading(false);
     }
   });
 
   return (
     <main className={`min-h-screen p-8 background ${bubblegum.className}`}>
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-7xl text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-white text-center mb-12 r">
+      {/* Floating fashion items */}
+      <FashionItems />
+
+      <div className={`max-w-4xl mx-auto`}>
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-7xl text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-white text-center mb-12"
+        >
           Rate My Fit
-        </h1>
+        </motion.h1>
         
-        <div className={`bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20 ${tomorrow.className}`}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="card-container rounded-2xl p-8"
+        >
           <div className="space-y-8">
             
             {!image && (
-              <div {...getRootProps()}>
+              <div {...getRootProps()} className="upload-area">
                 <motion.div
-                  className={`border-4 border-dashed rounded-xl p-8 text-center cursor-pointer
+                  className={`border border-dashed rounded-xl p-16 text-center cursor-pointer
                   ${isDragActive ? 'border-white' : 'border-gray-300'}`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <input {...getInputProps()} />
-                <p className="text-white text-xl">
-                  Drop your fit pic here or click to upload
-                </p>
-                <p className="text-white/60 mt-2">
-                  Supports JPG, PNG and WebP
-                </p>
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <input {...getInputProps()} />
+                  {isLoading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      className="mx-auto w-10 h-10 border-t-2 border-white rounded-full"
+                    />
+                  ) : (
+                    <>
+                      <motion.div 
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className={`text-3xl mb-3`}
+                      >
+                        📸
+                      </motion.div>
+                      <p className={`text-white text-xl ${tomorrow.className}`}>
+                        Drop your fit pic here or click to upload
+                      </p>
+                      <p className={`text-white/60 mt-2 ${tomorrow.className}`}>
+                        Supports JPG, PNG and WebP
+                      </p>
+                    </>
+                  )}
                 </motion.div>
               </div>
             )}
 
-            {image && (
-              <div className="relative w-full max-w-md mx-auto rounded-xl overflow-hidden">
-                <img
-                  src={image}
-                  alt="Uploaded outfit"
-                  className="w-full h-auto object-contain"
-                />
-                <button 
-                  onClick={() => setImage(null)}
-                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg"
+            <AnimatePresence>
+              {image && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="relative w-full max-w-md mx-auto rounded-xl overflow-hidden"
+                  style={{ zIndex: 10 }}
                 >
-                  Remove Image
-                </button>
-              </div>
-              
-            )}
+                  <img
+                    src={image}
+                    alt="Uploaded outfit"
+                    className="w-full h-auto object-contain opacity-100"
+                  />
+                  <motion.button 
+                    onClick={() => setImage(null)}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    Remove Image
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <OutfitContextForm 
               context={outfitContext}
@@ -130,15 +177,25 @@ export default function RatingPage() {
             {image && (
               <motion.button
                 onClick={handleGetRating}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg"
+                className="w-full action-button text-white font-bold py-3 px-6 rounded-lg"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Let's Rate
+                {isLoading ? 
+                  <span className={`flex items-center justify-center`}>
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="inline-block w-5 h-5 border-t-2 border-white rounded-full mr-2"
+                    />
+                    Processing...
+                  </span> : 
+                  "Let's Rate"
+                }
               </motion.button>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
     </main>
   );

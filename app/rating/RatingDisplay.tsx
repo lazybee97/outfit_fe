@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import React from 'react';
-import { OutfitContext } from '../components/OutfitContextForm';
+import { OutfitContext } from '../components/outfitContextForm';
 import { tomorrow } from '../fonts/fonts';
 import type { RatingsResponse } from '../types/ratingResponse';
 
@@ -23,7 +23,8 @@ export default function RatingDisplay({ ratingResponse, outfitContext }: { ratin
       uk: "United Kingdom",
       fr: "France",
       jp: "Japan",
-      kr: "South Korea"
+      kr: "South Korea",
+      in: "India"
     }
   };
 

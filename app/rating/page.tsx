@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { tomorrow } from '../fonts/fonts';
-import RatingDisplay from './RatingDisplay';
+import RatingDisplay from './ratingDisplay';
 import { useRouter } from 'next/navigation';
-import type { OutfitContext } from '../components/OutfitContextForm';
+import type { OutfitContext } from '../components/outfitContextForm';
 import type { RatingsResponse } from '../types/ratingResponse';
+import FashionItems from '../components/fashionItems';
 
 
 
@@ -15,6 +16,7 @@ export default function RatingResult() {
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  
   const [ratingResponse, setRatingResponse] = useState<RatingsResponse | null>(null);
   const [outfitContext, setOutfitContext] = useState<OutfitContext | null>(null);
 
@@ -42,7 +44,7 @@ export default function RatingResult() {
       setOutfitContext(parsedContext);
 
 
-      const response = await fetch(`${process.env.OUTFIT_BE_URL}/api/evaluate`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_OUTFIT_BE_URL}/api/evaluate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,10 +76,11 @@ export default function RatingResult() {
   return (
     <main className={`min-h-screen p-8 background ${tomorrow.className}`}>
       <div className="max-w-4xl mx-auto">
+        <FashionItems />
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20">
           {image && (
             <div className="space-y-8">
-              <div className="relative w-full max-w-md mx-auto rounded-xl overflow-hidden">
+              <div className="relative w-full max-w-md mx-auto rounded-xl overflow-hidden" style={{ zIndex: 10 }}>
                 <img
                   src={image}
                   alt="Uploaded outfit"
