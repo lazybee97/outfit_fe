@@ -94,6 +94,7 @@ export default function RatingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="text-7xl text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-white text-center mb-12"
+          style={{ zIndex: 10 }}
         >
           Rate My Fit
         </motion.h1>
